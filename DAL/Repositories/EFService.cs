@@ -15,9 +15,9 @@ namespace DAL.Repositories
         private MyDB db;
         private IRepository<CatDAL> catRepository;
 
-        public EFService(DbContextOptions<MyDB> options)
+        public EFService()
         {
-            db = new MyDB(options);
+            db = new MyDB();
         }
         public IRepository<CatDAL> Cats
         {

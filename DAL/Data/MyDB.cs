@@ -1,10 +1,6 @@
 ﻿using DAL.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace DAL.Data
 {
@@ -12,14 +8,14 @@ namespace DAL.Data
     {        
         internal DbSet<CatDAL> Cats { get; set; }
 
-        public MyDB(DbContextOptions<MyDB> options) : base(options)
+        public MyDB() : base()
         {
 
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            //optionsBuilder.UseSqlite("Data Source=D:\\helloapp.db");
+        {           
+            optionsBuilder.UseSqlServer("server=DESKTOP-DLRBUF2\\SQLEXPRESS;database=catsdb;Trusted_Connection=True;");
         }
 
     }

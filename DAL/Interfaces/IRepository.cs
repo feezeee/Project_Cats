@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace DAL.Interfaces
 {
-    internal interface IRepository<T> where T : class
+    public interface IRepository<T> where T : class
     {
         IEnumerable<T> GetAll();
         T Get(int id);
         IEnumerable<T> Find(Func<T, Boolean> predicate);
         void Create(T entity);
         void Update(T entity);
-        void Delete(T entity);
+        void Delete(int id);
 
     }
 }

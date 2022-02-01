@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace DAL.Interfaces
 {
-    internal interface IUnitOfWork
+    public interface IService
     {
-        IRepository<Cat> Cats { get; }
+        IRepository<CatDAL> Cats { get; }
         void Save();
 
     }

@@ -8,9 +8,19 @@ using System.Threading.Tasks;
 
 namespace DAL.Data
 {
-    internal class MyDB : DbContext
-    {
-        internal DbSet<Cat> Cats { get; set; }
+    public class MyDB : DbContext
+    {        
+        internal DbSet<CatDAL> Cats { get; set; }
+
+        public MyDB(DbContextOptions<MyDB> options) : base(options)
+        {
+
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            //optionsBuilder.UseSqlite("Data Source=D:\\helloapp.db");
+        }
 
     }
 }

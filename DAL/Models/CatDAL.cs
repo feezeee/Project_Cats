@@ -9,7 +9,7 @@ namespace DAL.Models
 {
     
     [Table("Cats")]
-    internal class Cat
+    public class CatDAL
     {
         [Column("CatId")]
         public int Id { get; set; }
@@ -19,6 +19,9 @@ namespace DAL.Models
 
         [Column("DateOfBirth")]
         public DateTime DateOfBirth { get; set; }
+
+        [Column("Price")]
+        public double Price { get; set; }
 
     }
 }

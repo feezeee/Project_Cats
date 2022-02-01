@@ -1,15 +1,10 @@
 ﻿using DAL.Data;
 using DAL.Interfaces;
 using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.Repositories
 {
-    internal class CatsRepository : IRepository<Cat>
+    internal class CatsRepository : IRepository<CatDAL>
     {
         private MyDB db;
 
@@ -17,49 +12,37 @@ namespace DAL.Repositories
         {
             this.db = context;
         }
-        public void Create(Cat entity)
+        public void Create(CatDAL entity)
         {
-            try
+            db.Cats.Add(entity);
+        }
+
+        public void Delete(int id)
+        {           
+            var cat = db.Cats.Find(id);
+            if(cat != null)
             {
-                db.Cats.Add(entity);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ошибка при создании нового котика ))");
-                Console.WriteLine(ex.Message);
+                db.Cats.Remove(cat);
             }
         }
 
-        public void Delete(Cat entity)
-        {
-            try
-            {
-                db.Cats.Remove(entity);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Ошибка при удалении котика ((");
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-        public IEnumerable<Cat> Find(Func<Cat, bool> predicate)
+        public IEnumerable<CatDAL> Find(Func<CatDAL, bool> predicate)
         {
             return db.Cats.Where(predicate).ToList();
         }
 
-        public Cat Get(int id)
+        public CatDAL Get(int id)
         {
             return db.Cats.Find(id);
         }
 
-        public IEnumerable<Cat> GetAll()
+        public IEnumerable<CatDAL> GetAll()
         {
             return db.Cats;
         }
 
-        public void Update(Cat entity)
-        {
+        public void Update(CatDAL entity)
+        {            
             db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }

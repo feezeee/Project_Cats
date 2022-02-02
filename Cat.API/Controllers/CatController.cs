@@ -16,13 +16,11 @@ namespace Cat.API.Controllers
         private readonly ICatService _catService;
         private readonly IMapper _mapper;
 
-        public CatController(ILogger<CatController> logger, ICatService catService)
+        public CatController(ILogger<CatController> logger, ICatService catService, IMapper mapper)
         {
             _logger = logger;
             _catService = catService;
-
-            // Не очень нравится мне
-            _mapper = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>()).CreateMapper();
+            _mapper = mapper;
 
         }
 
@@ -31,7 +29,6 @@ namespace Cat.API.Controllers
         public async Task<IEnumerable<CatModel>> GetAllCatsAsync()
         {
             var cats = await _catService.GetCatsAsync();
-            //var mapper = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>()).CreateMapper();
             var newcats = _mapper.Map<IEnumerable<BLL.Entities.Cat>, List<CatModel>>(cats);
             return newcats;
         }
@@ -40,10 +37,6 @@ namespace Cat.API.Controllers
         [HttpGet("{id}")]
         public async Task<CatModel> Get(int id)
         {
-            //var config = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>());
-            //// Настройка AutoMapper
-            //var mapper = new Mapper(config);
-            // сопоставление
             var cat = _mapper.Map<CatModel>(await _catService.FindCatAsync(id));
             return cat;
         }

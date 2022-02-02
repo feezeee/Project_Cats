@@ -1,18 +1,15 @@
-﻿using DAL.Data;
-using DAL.Interfaces;
-using DAL.Models;
-
+﻿
 namespace DAL.Repositories
 {
-    internal class CatsRepository : IRepository<CatDAL>
+    internal class CatsRepository : IRepository<Cat>
     {
-        private MyDB db;
+        private CatContext db;
 
-        public CatsRepository(MyDB context)
+        public CatsRepository(CatContext context)
         {
             this.db = context;
         }
-        public void Create(CatDAL entity)
+        public void Create(Cat entity)
         {
             db.Cats.Add(entity);
         }
@@ -26,17 +23,17 @@ namespace DAL.Repositories
             }
         }
 
-        public IEnumerable<CatDAL> Find(Func<CatDAL, bool> predicate)
+        public IEnumerable<Cat> Find(Func<Cat, bool> predicate)
         {
             return db.Cats.Where(predicate).ToList();
         }
 
-        public CatDAL Get(int id)
+        public Cat Get(int id)
         {
             return db.Cats.Find(id);
         }
 
-        public IEnumerable<CatDAL> GetAll()
+        public IEnumerable<Cat> GetAll()
         {
             //Console.WriteLine("Выдаю котика");
             //foreach(var t in db.Cats)
@@ -46,7 +43,7 @@ namespace DAL.Repositories
             return db.Cats;
         }
 
-        public void Update(CatDAL entity)
+        public void Update(Cat entity)
         {   
             var cat = db.Cats.Find(entity.Id);
             if (cat != null)

@@ -1,18 +1,16 @@
-﻿using DAL.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Data
+namespace DAL
 {
-    public class MyDB : DbContext
+    public class CatContext : DbContext
     {        
-        internal DbSet<CatDAL> Cats { get; set; }
+        internal DbSet<Cat> Cats { get; set; }
 
-        public MyDB() : base()
+        public CatContext() : base()
         {
             //Database.EnsureCreated();   // создаем бд с новой схемой
         }
-        public MyDB(DbContextOptions options) : base(options)
+        public CatContext(DbContextOptions options) : base(options)
         {
         }
 

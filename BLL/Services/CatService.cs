@@ -25,7 +25,7 @@ namespace BLL.Services
         {    
             if(catBLL != null)
             {
-                myService.Cats.Create(new CatDAL { Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth });
+                myService.Cats.Create(new Cat { Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth });
                 myService.Save();
             }
             
@@ -40,25 +40,25 @@ namespace BLL.Services
 
         public IEnumerable<CatDTO> GetCatBy(Func<CatDTO, bool> predicate)
         {
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<CatDAL, CatDTO>()).CreateMapper();
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Cat, CatDTO>()).CreateMapper();
 
             // Временный костыль c Where) Не получается разобраться с автомапером Func<>
 
-            return mapper.Map<IEnumerable<CatDAL>, IEnumerable<CatDTO>>(myService.Cats.GetAll()).Where(predicate);
+            return mapper.Map<IEnumerable<Cat>, IEnumerable<CatDTO>>(myService.Cats.GetAll()).Where(predicate);
         }
 
         public IEnumerable<CatDTO> GetCats()
         {
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<CatDAL, CatDTO>()).CreateMapper();
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Cat, CatDTO>()).CreateMapper();
 
-            return mapper.Map<IEnumerable<CatDAL>, IEnumerable<CatDTO>>(myService.Cats.GetAll());
+            return mapper.Map<IEnumerable<Cat>, IEnumerable<CatDTO>>(myService.Cats.GetAll());
         }
 
         public void UpdateCat(CatDTO catBLL)
         {
             if(catBLL != null)
             {
-                myService.Cats.Update(new CatDAL { Id = catBLL.Id, Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth });
+                myService.Cats.Update(new Cat { Id = catBLL.Id, Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth });
                 myService.Save();
             }           
         }

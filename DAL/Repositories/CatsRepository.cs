@@ -38,12 +38,24 @@ namespace DAL.Repositories
 
         public IEnumerable<CatDAL> GetAll()
         {
+            //Console.WriteLine("Выдаю котика");
+            //foreach(var t in db.Cats)
+            //{
+            //    Console.WriteLine(t.Name);
+            //}
             return db.Cats;
         }
 
         public void Update(CatDAL entity)
-        {            
-            db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        {   
+            var cat = db.Cats.Find(entity.Id);
+            if (cat != null)
+            {
+                cat.Name = entity.Name;
+                cat.Price = entity.Price;
+                cat.DateOfBirth = entity.DateOfBirth;
+                db.Entry(cat).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
         }
     }
 }

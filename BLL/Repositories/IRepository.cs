@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Interfaces
+namespace BLL.Repository
 {
     public interface IRepository<T> where T : class
     {
@@ -14,6 +14,5 @@ namespace DAL.Interfaces
         void Create(T entity);
         void Update(T entity);
         void Delete(int id);
-
     }
 }

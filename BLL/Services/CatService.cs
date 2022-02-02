@@ -1,76 +1,53 @@
-﻿using AutoMapper;
-using BLL.Interfaces;
-using BLL.Models;
-using DAL.Interfaces;
-using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BLL.Entities;
+using BLL.Repository;
 
 namespace BLL.Services
 {
     public class CatService : ICatService
     {
-        IService myService { get; set; }
+        IRepository<Cat> cats { get; set; }
 
-        public CatService(IService service)
+        public CatService(IRepository<Cat> cats)
         {
-            myService = service;
+            this.cats = cats;
         }
 
-        public void AddCat(CatDTO catBLL)
+        public void AddCat(Cat cat)
         {    
-            if(catBLL != null)
+            if(cat != null)
             {
-                myService.Cats.Create(new Cat { Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth });
-                myService.Save();
+                cats.Create(cat);
             }
             
         }
 
         public void DeleteCat(int id)
         {
-            myService.Cats.Delete(id);
-            myService.Save();
+            cats.Delete(id);
         }
 
 
-        public IEnumerable<CatDTO> GetCatBy(Func<CatDTO, bool> predicate)
+        public IEnumerable<Cat> GetCatBy(Func<Cat, bool> predicate)
         {
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Cat, CatDTO>()).CreateMapper();
-
-            // Временный костыль c Where) Не получается разобраться с автомапером Func<>
-
-            return mapper.Map<IEnumerable<Cat>, IEnumerable<CatDTO>>(myService.Cats.GetAll()).Where(predicate);
+            return cats.Find(predicate);
         }
 
-        public IEnumerable<CatDTO> GetCats()
+        public IEnumerable<Cat> GetCats()
         {
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Cat, CatDTO>()).CreateMapper();
-
-            return mapper.Map<IEnumerable<Cat>, IEnumerable<CatDTO>>(myService.Cats.GetAll());
+            return cats.GetAll();
         }
 
-        public void UpdateCat(CatDTO catBLL)
+        public void UpdateCat(Cat cat)
         {
-            if(catBLL != null)
+            if(cat != null)
             {
-                myService.Cats.Update(new Cat { Id = catBLL.Id, Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth });
-                myService.Save();
+                cats.Update(cat);
             }           
         }
 
-        public CatDTO? FindCat(int id)
+        public Cat? FindCat(int id)
         {
-            var cat = myService.Cats.Get(id);
-            if(cat != null)
-            {
-                return new CatDTO { Id = cat.Id, DateOfBirth = cat.DateOfBirth, Name = cat.Name, Price = cat.Price };
-            }
-            return null;
+            return cats.Get(id);
         }
     }
 }

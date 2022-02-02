@@ -1,7 +1,9 @@
-﻿
+﻿using BLL.Entities;
+using BLL.Repository;
+
 namespace DAL.Repositories
 {
-    internal class CatsRepository : IRepository<Cat>
+    public class CatsRepository : IRepository<Cat>
     {
         private CatContext db;
 
@@ -11,7 +13,12 @@ namespace DAL.Repositories
         }
         public void Create(Cat entity)
         {
-            db.Cats.Add(entity);
+            if (entity != null)
+            {
+                entity.Id = 0;
+                db.Cats.Add(entity);
+                db.SaveChanges();
+            }
         }
 
         public void Delete(int id)
@@ -20,6 +27,7 @@ namespace DAL.Repositories
             if(cat != null)
             {
                 db.Cats.Remove(cat);
+                db.SaveChanges();
             }
         }
 
@@ -34,12 +42,7 @@ namespace DAL.Repositories
         }
 
         public IEnumerable<Cat> GetAll()
-        {
-            //Console.WriteLine("Выдаю котика");
-            //foreach(var t in db.Cats)
-            //{
-            //    Console.WriteLine(t.Name);
-            //}
+        {            
             return db.Cats;
         }
 
@@ -52,6 +55,7 @@ namespace DAL.Repositories
                 cat.Price = entity.Price;
                 cat.DateOfBirth = entity.DateOfBirth;
                 db.Entry(cat).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                db.SaveChanges();
             }
         }
     }

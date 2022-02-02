@@ -1,4 +1,4 @@
-﻿namespace Project_Cats_API.Models
+﻿namespace Cat.API.Models
 {
     public class CatModel
     {

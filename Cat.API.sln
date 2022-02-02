@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DAL\DAL.csproj", "{0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "BLL\BLL.csproj", "{7D559A3B-FF39-430A-A934-B98EC7B86D02}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cat.API", "Project_Cats_API\Cat.API.csproj", "{EE830A24-9808-42F5-9FD0-081A30A68DD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cat.API", "Cat.API\Cat.API.csproj", "{EE830A24-9808-42F5-9FD0-081A30A68DD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

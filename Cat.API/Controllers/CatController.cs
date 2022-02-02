@@ -1,33 +1,34 @@
 ﻿using AutoMapper;
-using BLL.Interfaces;
-using BLL.Models;
+using BLL.Entities;
+using BLL.Services;
+using Cat.API.Models;
 using Microsoft.AspNetCore.Mvc;
-using Project_Cats_API.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Project_Cats_API.Controllers
+namespace Cat.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class CatController : ControllerBase
     {
         private readonly ILogger<CatController> _logger;
-        private readonly IServiceManager _serviceManager;
+        private readonly ICatService _catService;
 
-        public CatController(ILogger<CatController> logger, IServiceManager serviceManager)
+        public CatController(ILogger<CatController> logger, ICatService catService)
         {
             _logger = logger;
-            _serviceManager = serviceManager;
+            _catService = catService;
         }
 
         // GET: api/<CatController>
         [HttpGet]
         public IEnumerable<CatModel> GetAllCats()
         {
-            var cats = _serviceManager.catService.GetCats();
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<CatDTO, CatModel>()).CreateMapper();
-            var newcats = mapper.Map<IEnumerable<CatDTO>, List<CatModel>>(cats);
+            var cats = _catService.GetCats();
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>()).CreateMapper();
+           
+            var newcats = mapper.Map<IEnumerable<BLL.Entities.Cat>, List<CatModel>>(cats);
             return newcats;
         }
 
@@ -35,11 +36,11 @@ namespace Project_Cats_API.Controllers
         [HttpGet("{id}")]
         public CatModel Get(int id)
         {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<CatDTO, CatModel>());
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>());
             // Настройка AutoMapper
             var mapper = new Mapper(config);
             // сопоставление
-            var cat = mapper.Map<CatModel>(_serviceManager.catService.FindCat(id));
+            var cat = mapper.Map<CatModel>(_catService.FindCat(id));
             return cat;
         }
 
@@ -47,21 +48,21 @@ namespace Project_Cats_API.Controllers
         [HttpPost]
         public void Post([FromBody] CatModel cat)
         {
-            _serviceManager.catService.AddCat(new CatDTO { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
+            _catService.AddCat(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
         }
 
         // PUT api/<CatController>
         [HttpPut]
         public void Put([FromBody] CatModel cat)
         {
-            _serviceManager.catService.UpdateCat(new CatDTO { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
+            _catService.UpdateCat(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
         }
 
         // DELETE api/<CatController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            _serviceManager.catService.DeleteCat(id);
+            _catService.DeleteCat(id);
         }
     }
 }

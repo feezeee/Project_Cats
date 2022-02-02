@@ -22,13 +22,19 @@ namespace BLL.Services
         }
 
         public void AddCat(CatDTO catBLL)
-        {          
-            myService.Cats.Create(new CatDAL { Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth});
+        {    
+            if(catBLL != null)
+            {
+                myService.Cats.Create(new CatDAL { Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth });
+                myService.Save();
+            }
+            
         }
 
         public void DeleteCat(int id)
         {
             myService.Cats.Delete(id);
+            myService.Save();
         }
 
 
@@ -50,8 +56,21 @@ namespace BLL.Services
 
         public void UpdateCat(CatDTO catBLL)
         {
-            myService.Cats.Update(new CatDAL { Id = catBLL.Id, Name=catBLL.Name, Price = catBLL.Price, DateOfBirth=catBLL.DateOfBirth });
+            if(catBLL != null)
+            {
+                myService.Cats.Update(new CatDAL { Id = catBLL.Id, Name = catBLL.Name, Price = catBLL.Price, DateOfBirth = catBLL.DateOfBirth });
+                myService.Save();
+            }           
         }
 
+        public CatDTO? FindCat(int id)
+        {
+            var cat = myService.Cats.Get(id);
+            if(cat != null)
+            {
+                return new CatDTO { Id = cat.Id, DateOfBirth = cat.DateOfBirth, Name = cat.Name, Price = cat.Price };
+            }
+            return null;
+        }
     }
 }

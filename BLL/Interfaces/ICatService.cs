@@ -13,6 +13,7 @@ namespace BLL.Interfaces
         void UpdateCat(CatDTO catBLL);
         void DeleteCat(int id);
         IEnumerable<CatDTO> GetCats();
+        CatDTO FindCat(int id);
         IEnumerable<CatDTO> GetCatBy(Func<CatDTO, bool> predicate);
 
     }

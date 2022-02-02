@@ -1,6 +1,8 @@
+using AutoMapper;
 using BLL.Entities;
 using BLL.Repository;
 using BLL.Services;
+using Cat.API.Models;
 using DAL;
 using DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,10 +22,6 @@ builder.Services.AddDbContext<CatContext>(options => options.UseSqlServer(connec
 
 builder.Services.AddTransient<IRepository<BLL.Entities.Cat>, CatsRepository>();
 builder.Services.AddTransient<ICatService, CatService>();
-
-
-
-
 
 var app = builder.Build();
 

@@ -14,55 +14,59 @@ namespace Cat.API.Controllers
     {
         private readonly ILogger<CatController> _logger;
         private readonly ICatService _catService;
+        private readonly IMapper _mapper;
 
         public CatController(ILogger<CatController> logger, ICatService catService)
         {
             _logger = logger;
             _catService = catService;
+
+            // Не очень нравится мне
+            _mapper = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>()).CreateMapper();
+
         }
 
         // GET: api/<CatController>
         [HttpGet]
-        public IEnumerable<CatModel> GetAllCats()
+        public async Task<IEnumerable<CatModel>> GetAllCatsAsync()
         {
-            var cats = _catService.GetCats();
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>()).CreateMapper();
-           
-            var newcats = mapper.Map<IEnumerable<BLL.Entities.Cat>, List<CatModel>>(cats);
+            var cats = await _catService.GetCatsAsync();
+            //var mapper = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>()).CreateMapper();
+            var newcats = _mapper.Map<IEnumerable<BLL.Entities.Cat>, List<CatModel>>(cats);
             return newcats;
         }
 
         // GET api/<CatController>/5
         [HttpGet("{id}")]
-        public CatModel Get(int id)
+        public async Task<CatModel> Get(int id)
         {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>());
-            // Настройка AutoMapper
-            var mapper = new Mapper(config);
+            //var config = new MapperConfiguration(cfg => cfg.CreateMap<BLL.Entities.Cat, CatModel>());
+            //// Настройка AutoMapper
+            //var mapper = new Mapper(config);
             // сопоставление
-            var cat = mapper.Map<CatModel>(_catService.FindCat(id));
+            var cat = _mapper.Map<CatModel>(await _catService.FindCatAsync(id));
             return cat;
         }
 
         // POST api/<CatController>
         [HttpPost]
-        public void Post([FromBody] CatModel cat)
+        public async Task Post([FromBody] CatModel cat)
         {
-            _catService.AddCat(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
+            await _catService.AddCatAsync(new BLL.Entities.Cat { Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
         }
 
         // PUT api/<CatController>
         [HttpPut]
-        public void Put([FromBody] CatModel cat)
+        public async Task Put([FromBody] CatModel cat)
         {
-            _catService.UpdateCat(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
+            await _catService.UpdateCatAsync(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
         }
 
         // DELETE api/<CatController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            _catService.DeleteCat(id);
+            await _catService.DeleteCatAsync(id);
         }
     }
 }

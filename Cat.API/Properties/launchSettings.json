@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "Project_Cats_API": {
+    "Cat.API": {
       "commandName": "Project",
       "launchUrl": "api/Cat",
       "environmentVariables": {

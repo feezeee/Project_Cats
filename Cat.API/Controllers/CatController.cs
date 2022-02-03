@@ -55,11 +55,11 @@ namespace Cat.API.Controllers
             await _catService.UpdateCatAsync(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
         }
 
-        // DELETE api/<CatController>/5
-        [HttpDelete("{id}")]
-        public async Task Delete(int id)
-        {
-            await _catService.DeleteCatAsync(id);
+        // DELETE api/<CatController>
+        [HttpDelete]
+        public async Task Delete([FromBody] CatModel cat)
+        {            
+            await _catService.DeleteCatAsync(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
         }
     }
 }

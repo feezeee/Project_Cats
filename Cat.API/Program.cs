@@ -1,11 +1,15 @@
 using AutoMapper;
 using BLL.Entities;
+using BLL.Finders;
 using BLL.Repository;
 using BLL.Services;
+using BLL.UnitOfWork;
 using Cat.API.AutoMapper;
 using Cat.API.Models;
 using DAL;
+using DAL.Finders;
 using DAL.Repositories;
+using DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,8 +25,12 @@ string connection = builder.Configuration.GetConnectionString("DefaultConnection
 // Добавляю контекст
 builder.Services.AddDbContext<CatContext>(options => options.UseSqlServer(connection));
 
-builder.Services.AddTransient<IRepository<BLL.Entities.Cat>, CatsRepository>();
+builder.Services.AddTransient<IRepository<BLL.Entities.Cat>, Repository<BLL.Entities.Cat>>();
+builder.Services.AddTransient<IFinder<BLL.Entities.Cat>, Finder<BLL.Entities.Cat>>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddTransient<ICatService, CatService>();
+
 builder.Services.AddAutoMapper(typeof(CatProfile));
 
 var app = builder.Build();

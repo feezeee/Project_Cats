@@ -1,99 +1,80 @@
 ﻿using BLL.Entities;
+using BLL.Finders;
 using BLL.Repository;
-
+using BLL.UnitOfWork;
 
 namespace BLL.Services
 {
     public class CatService : ICatService
     {
         IRepository<Cat> cats { get; set; }
+        IFinder<Cat> catFinder { get; set; }
 
-        public CatService(IRepository<Cat> cats)
+        IUnitOfWork unitOfWork { get; set; }
+
+        public CatService(IRepository<Cat> cats, IFinder<Cat> catFinder, IUnitOfWork unitOfWork)
         {
             this.cats = cats;
-        }
-
-        public void AddCat(Cat cat)
-        {    
-            if(cat != null)
-            {
-                cats.Create(cat);
-            }
-            
-        }
+            this.catFinder = catFinder;
+            this.unitOfWork = unitOfWork;
+        }       
 
         public async Task AddCatAsync(Cat cat)
         {
             if (cat != null)
             {
+                cat.Id = 0;
                 await cats.CreateAsync(cat);
+                await unitOfWork.SaveAsync();
             }
         }
 
-
-        public void DeleteCat(int id)
-        {
-            cats.Delete(id);
-        }
-
-        public async Task DeleteCatAsync(int id)
-        {
-            await cats.DeleteAsync(id);
-        }
-
-
-        public IEnumerable<Cat> GetCatBy(Func<Cat, bool> predicate)
-        {
-            return cats.Find(predicate);
-        }
-
-        public async Task<IEnumerable<Cat>> GetCatByAsync(Func<Cat, bool> predicate)
-        {
-            return await cats.FindAsync(predicate);
-        }
-
-
-
-        public IEnumerable<Cat> GetCats()
-        {
-            return cats.GetAll();
-        }
-        public async Task<IEnumerable<Cat>> GetCatsAsync()
+        public async Task<IQueryable<Cat>> GetCatsAsync()
         {
             return await cats.GetAllAsync();
         }
 
-
-        public void UpdateCat(Cat cat)
-        {
-            if(cat != null)
-            {
-                cats.Update(cat);
-            }           
-        }
         public async Task UpdateCatAsync(Cat cat)
         {
             if (cat != null)
             {
-                await cats.UpdateAsync(cat);
+                var mycat = await catFinder.GetAsync(cat.Id);
+                if (mycat != null)
+                {
+                    mycat.Price = cat.Price;
+                    mycat.Name = cat.Name;
+                    mycat.DateOfBirth = cat.DateOfBirth;
+                    await cats.UpdateAsync(mycat);
+                    await unitOfWork.SaveAsync();
+                }
+                
             }
         }
 
-
-        public Cat FindCat(int id)
-        {
-            return cats.Get(id);
+        public async Task DeleteCatAsync(Cat cat)
+        {            
+            if (cat != null)
+            {
+                var mycat = await catFinder.GetAsync(cat.Id);
+                if (mycat != null)
+                {
+                    await cats.DeleteAsync(mycat);
+                    await unitOfWork.SaveAsync();
+                }
+              
+            }
+            
         }
+
+        public async Task<IQueryable<Cat>> GetCatByAsync(Func<Cat, bool> predicate)
+        {
+            return await catFinder.FindAsync(predicate);
+        }
+
         public async Task<Cat> FindCatAsync(int id)
         {
-            return await cats.GetAsync(id);
+            return await catFinder.GetAsync(id);
         }
-
-
-
-
-
-
 
     }
 }

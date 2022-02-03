@@ -7,27 +7,13 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public interface ICatService
-    {
-        void AddCat(Cat cat);
+    public interface ICatService 
+    {       
         Task AddCatAsync (Cat cat);
-
-
-        void UpdateCat(Cat cat);
+        Task<IQueryable<Cat>> GetCatsAsync();
         Task UpdateCatAsync (Cat cat);
-
-
-        void DeleteCat(int id);
-        Task DeleteCatAsync (int id);
-
-        IEnumerable<Cat> GetCats();
-        Task<IEnumerable<Cat>> GetCatsAsync();
-
-        Cat FindCat(int id);
+        Task DeleteCatAsync (Cat cat);
         Task<Cat> FindCatAsync(int id);
-
-
-        IEnumerable<Cat> GetCatBy(Func<Cat, bool> predicate);
-        Task<IEnumerable<Cat>> GetCatByAsync(Func<Cat, bool> predicate);
+        Task<IQueryable<Cat>> GetCatByAsync(Func<Cat, bool> predicate);
     }
 }

@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using BLL.Entities;
 using BLL.Services;
-using Cat.API.Models;
+using Cat.API.Request;
+using Cat.API.Response;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -26,40 +27,85 @@ namespace Cat.API.Controllers
 
         // GET: api/<CatController>
         [HttpGet]
-        public async Task<IEnumerable<CatModel>> GetAllCatsAsync()
+        public IActionResult Get()
         {
-            var cats = await _catService.GetCatsAsync();
-            var newcats = _mapper.Map<IEnumerable<BLL.Entities.Cat>, List<CatModel>>(cats);
-            return newcats;
+            try
+            {
+                var cats = _catService.Get();
+                if (cats == null)
+                {
+                    return NoContent();
+                }
+                return Ok(cats);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET api/<CatController>/5
         [HttpGet("{id}")]
-        public async Task<CatModel> Get(int id)
+        public IActionResult Get(int id)
         {
-            var cat = _mapper.Map<CatModel>(await _catService.FindCatAsync(id));
-            return cat;
+            try
+            {
+                var cat = _catService.GetById(id);
+                if(cat == null)
+                {
+                    return NoContent();
+                }
+                return Ok(cat);
+            }
+            catch (Exception ex)
+            {
+               return BadRequest(ex.Message);
+            }
         }
 
         // POST api/<CatController>
         [HttpPost]
-        public async Task Post([FromBody] CatModel cat)
+        public async Task<IActionResult> Post([FromBody] PostCatRequest cat)
         {
-            await _catService.AddCatAsync(new BLL.Entities.Cat { Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
+            try
+            {
+                await _catService.Create(_mapper.Map<BLL.Entities.Cat>(cat));
+                return Ok("Котик добавлен )");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT api/<CatController>
         [HttpPut]
-        public async Task Put([FromBody] CatModel cat)
+        public async Task<IActionResult> Put([FromBody] PutCatRequest cat)
         {
-            await _catService.UpdateCatAsync(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
+            try
+            {
+                await _catService.Update(_mapper.Map<BLL.Entities.Cat>(cat));
+                return Ok("Котик изменен");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE api/<CatController>
         [HttpDelete]
-        public async Task Delete([FromBody] CatModel cat)
-        {            
-            await _catService.DeleteCatAsync(new BLL.Entities.Cat { Id = cat.Id, Name = cat.Name, DateOfBirth = cat.DateOfBirth, Price = cat.Price });
+        public async Task<IActionResult> Delete([FromBody] DeleteCatRequest cat)
+        {
+            try
+            {
+                await _catService.Delete(_mapper.Map<BLL.Entities.Cat>(cat));
+                return Ok("Котик удален :(");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

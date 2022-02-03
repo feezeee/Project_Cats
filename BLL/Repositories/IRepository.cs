@@ -9,10 +9,10 @@ namespace BLL.Repository
     public interface IRepository<T> where T : class
     {
         // CRUD операции
-        Task CreateAsync(T entity);
-        Task<IQueryable<T>> GetAllAsync();
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(T entity);
+        void Create(T entity);
+        IQueryable<T> Get();
+        void Update(T entity);
+        void Delete(T entity);
 
         
     }

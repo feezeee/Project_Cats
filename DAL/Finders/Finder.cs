@@ -7,21 +7,16 @@ using System.Threading.Tasks;
 
 namespace DAL.Finders
 {
-    public class Finder<T> : IFinder<T> where T : class
+    public class Finder<T> where T : class
     {
         private CatContext db;
         public Finder(CatContext context)
         {
             db = context;
         }
-        public async Task<IQueryable<T>> FindAsync(Func<T, bool> predicate)
+        protected IQueryable<T> Find()
         {
-            return await Task.Run(() => db.Set<T>().Where(predicate).AsQueryable());
-        }
-
-        public async Task<T> GetAsync(int id)
-        {
-            return await db.Set<T>().FindAsync(id);
+            return db.Set<T>().AsQueryable();
         }
     }
 }

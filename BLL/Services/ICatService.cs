@@ -9,11 +9,11 @@ namespace BLL.Services
 {
     public interface ICatService 
     {       
-        Task AddCatAsync (Cat cat);
-        Task<IQueryable<Cat>> GetCatsAsync();
-        Task UpdateCatAsync (Cat cat);
-        Task DeleteCatAsync (Cat cat);
-        Task<Cat> FindCatAsync(int id);
-        Task<IQueryable<Cat>> GetCatByAsync(Func<Cat, bool> predicate);
+        Task Create (Cat cat);
+        IEnumerable<Cat> Get();
+        Task Update (Cat cat);
+        Task Delete (Cat cat);
+        Cat GetById(int id);
+        Task<IEnumerable<Cat>> GetByName(string name);
     }
 }

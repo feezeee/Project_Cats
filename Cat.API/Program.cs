@@ -1,11 +1,8 @@
-using AutoMapper;
-using BLL.Entities;
 using BLL.Finders;
 using BLL.Repository;
 using BLL.Services;
 using BLL.UnitOfWork;
 using Cat.API.AutoMapper;
-using Cat.API.Models;
 using DAL;
 using DAL.Finders;
 using DAL.Repositories;
@@ -26,7 +23,9 @@ string connection = builder.Configuration.GetConnectionString("DefaultConnection
 builder.Services.AddDbContext<CatContext>(options => options.UseSqlServer(connection));
 
 builder.Services.AddTransient<IRepository<BLL.Entities.Cat>, Repository<BLL.Entities.Cat>>();
-builder.Services.AddTransient<IFinder<BLL.Entities.Cat>, Finder<BLL.Entities.Cat>>();
+builder.Services.AddTransient<Finder<BLL.Entities.Cat>>();
+builder.Services.AddTransient<ICatFinder, CatFinder>();
+
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddTransient<ICatService, CatService>();

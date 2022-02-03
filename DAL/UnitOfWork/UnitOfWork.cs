@@ -15,9 +15,9 @@ namespace DAL.UnitOfWork
             db = context;
         }
 
-        public async Task SaveAsync()
+        public Task<int> Save()
         {
-            await db.SaveChangesAsync();
+           return db.SaveChangesAsync();
         }
     }
 }

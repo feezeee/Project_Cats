@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Cat.API.Models;
+using Cat.API.Request;
 
 namespace Cat.API.AutoMapper
 {
@@ -7,7 +7,9 @@ namespace Cat.API.AutoMapper
     {
         public CatProfile()
         {
-            CreateMap<BLL.Entities.Cat, CatModel>();
+            CreateMap<PostCatRequest, BLL.Entities.Cat>();
+            CreateMap<PutCatRequest, BLL.Entities.Cat>();
+            CreateMap<DeleteCatRequest, BLL.Entities.Cat>();
         }
     }
 }

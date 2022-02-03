@@ -17,33 +17,24 @@ namespace DAL.Repositories
             this.db = context;
         }
 
-        public async Task CreateAsync(T entity)
+        public void Create(T entity)
         {
-            if (entity != null)
-            {
-                await db.Set<T>().AddAsync(entity);
-            }
+            db.Set<T>().AddAsync(entity);           
         }
 
-        public async Task UpdateAsync(T entity)
+        public void Update(T entity)
         {
-            if (entity != null)
-            {
-                db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            }
+            db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
        
-        public async Task<IQueryable<T>> GetAllAsync()
+        public IQueryable<T> Get()
         {
-            return await Task.Run(() => db.Set<T>());
+            return db.Set<T>().AsQueryable();
         }
-
-        public async Task DeleteAsync(T entity)
-        {            
-            if (entity != null)
-            {
-                db.Set<T>().Remove(entity);
-            }
+        
+        public void Delete(T entity)
+        {   
+            db.Set<T>().Remove(entity); 
         }
 
     }

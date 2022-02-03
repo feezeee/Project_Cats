@@ -8,27 +8,12 @@ namespace BLL.Repository
 {
     public interface IRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
-        Task<IEnumerable<T>> GetAllAsync();
-
-
-        T Get(int id);
-        Task<T> GetAsync(int id);
-
-
-        IEnumerable<T> Find(Func<T, Boolean> predicate);
-        Task<IEnumerable<T>> FindAsync(Func<T, Boolean> predicate);
-
-
-        void Create(T entity);
+        // CRUD операции
         Task CreateAsync(T entity);
-
-
-        void Update(T entity);
+        Task<IQueryable<T>> GetAllAsync();
         Task UpdateAsync(T entity);
+        Task DeleteAsync(T entity);
 
-
-        void Delete(int id);
-        Task DeleteAsync(int id);
+        
     }
 }

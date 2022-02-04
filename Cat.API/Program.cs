@@ -3,11 +3,15 @@ using BLL.Repository;
 using BLL.Services;
 using BLL.UnitOfWork;
 using Cat.API.AutoMapper;
+using Cat.API.Middleware;
 using DAL;
 using DAL.Finders;
 using DAL.Repositories;
 using DAL.UnitOfWork;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,12 +34,36 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddTransient<ICatService, CatService>();
 
-builder.Services.AddAutoMapper(typeof(CatProfile));
+builder.Services.AddTransient<IRepository<BLL.Entities.Account>, Repository<BLL.Entities.Account>>();
+builder.Services.AddTransient<Finder<BLL.Entities.Account>>();
+builder.Services.AddTransient<IAccountFinder, AccountFinder>();
+builder.Services.AddTransient<IAccountService, AccountService>();
+
+
+
+builder.Services.AddAutoMapper(typeof(CatProfile), typeof(UserProfile));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidateLifetime = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ValidateIssuerSigningKey = true
+    };
+});
 
 var app = builder.Build();
 
 
+var us = app.Services.CreateScope().ServiceProvider.GetService<IAccountService>();
 
+app.UseMiddleware<JWTMiddleware>(us);
 
 
 // Configure the HTTP request pipeline.
@@ -48,6 +76,7 @@ if (builder.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 

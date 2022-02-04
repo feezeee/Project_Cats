@@ -16,9 +16,9 @@ namespace DAL.Finders
 
         }
 
-        public Cat GetById(int id)
+        public Task<Cat> GetById(int id)
         {
-            return Find().First(t => t.Id == id);
+            return Find().FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public Task<List<Cat>> GetByName(string name)            

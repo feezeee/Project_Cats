@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace BLL.Finders
 {
-    public interface ICatFinder
+    public interface IAccountFinder
     {
-        Task<Cat> GetById(int id);
+        Task<Account> GetByName(string name);
+        Task<Account> GetByNameAndPassword(string name, string password);
 
-        Task<List<Cat>> GetByName(string name);
     }
 }

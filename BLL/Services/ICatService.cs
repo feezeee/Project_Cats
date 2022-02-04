@@ -13,7 +13,7 @@ namespace BLL.Services
         IEnumerable<Cat> Get();
         Task Update (Cat cat);
         Task Delete (Cat cat);
-        Cat GetById(int id);
+        Task<Cat> GetById(int id);
         Task<IEnumerable<Cat>> GetByName(string name);
     }
 }

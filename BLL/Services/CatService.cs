@@ -32,30 +32,23 @@ namespace BLL.Services
 
         public async Task Update(Cat cat)
         {
-            var mycat = catFinder.GetById(cat.Id);
-            if (mycat != null)
-            {
-                 mycat.Price = cat.Price;
-                 mycat.Name = cat.Name;
-                 mycat.DateOfBirth = cat.DateOfBirth;
-                 cats.Update(mycat);
-                 await unitOfWork.Save();
-            }
+            
+            cats.Update(cat);
+            await unitOfWork.Save();
+            
         }
 
         public async Task Delete(Cat cat)
         {     
-            var mycat = catFinder.GetById(cat.Id);
-            if (mycat != null)
-            {
-                cats.Delete(mycat);
-                await unitOfWork.Save();
-            }   
+           
+            cats.Delete(cat);
+            await unitOfWork.Save();
+            
         }
 
-        public Cat GetById(int id)
+        public async Task<Cat> GetById(int id)
         {
-            return catFinder.GetById(id);
+            return await catFinder.GetById(id);
         }
 
         public async Task<IEnumerable<Cat>> GetByName(string name)

@@ -3,6 +3,7 @@ using BLL.Entities;
 using BLL.Services;
 using Cat.API.Request;
 using Cat.API.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,6 +12,7 @@ namespace Cat.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Cat.API.Middleware.Authorize]
     public class CatController : ControllerBase
     {
         private readonly ILogger<CatController> _logger;
@@ -32,7 +34,7 @@ namespace Cat.API.Controllers
             try
             {
                 var cats = _catService.Get();
-                if (cats == null)
+                if (cats.Count() == 0)
                 {
                     return NoContent();
                 }
@@ -46,11 +48,11 @@ namespace Cat.API.Controllers
 
         // GET api/<CatController>/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
-                var cat = _catService.GetById(id);
+                var cat = await _catService.GetById(id);
                 if(cat == null)
                 {
                     return NoContent();

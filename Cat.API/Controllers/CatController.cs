@@ -3,6 +3,7 @@ using BLL.Entities;
 using BLL.Services;
 using Cat.API.Request;
 using Cat.API.Response;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +13,7 @@ namespace Cat.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Cat.API.Middleware.Authorize]
+    [Authorize(Roles = "admin")]
     public class CatController : ControllerBase
     {
         private readonly ILogger<CatController> _logger;
@@ -33,7 +34,7 @@ namespace Cat.API.Controllers
         {
             try
             {
-                var cats = _catService.Get();
+                var cats = _mapper.Map<IEnumerable<GetCatResponse>>(_catService.Get());
                 if (cats.Count() == 0)
                 {
                     return NoContent();
@@ -52,7 +53,7 @@ namespace Cat.API.Controllers
         {
             try
             {
-                var cat = await _catService.GetById(id);
+                var cat = _mapper.Map<GetCatResponse>(await _catService.GetById(id));
                 if(cat == null)
                 {
                     return NoContent();
@@ -67,11 +68,11 @@ namespace Cat.API.Controllers
 
         // POST api/<CatController>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] PostCatRequest cat)
+        public IActionResult Post([FromBody] PostCatRequest cat)
         {
             try
             {
-                await _catService.Create(_mapper.Map<BLL.Entities.Cat>(cat));
+                _catService.Create(_mapper.Map<BLL.Entities.Cat>(cat));
                 return Ok("Котик добавлен )");
             }
             catch (Exception ex)
@@ -82,11 +83,11 @@ namespace Cat.API.Controllers
 
         // PUT api/<CatController>
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] PutCatRequest cat)
+        public IActionResult Put([FromBody] PutCatRequest cat)
         {
             try
             {
-                await _catService.Update(_mapper.Map<BLL.Entities.Cat>(cat));
+                _catService.Update(_mapper.Map<BLL.Entities.Cat>(cat));
                 return Ok("Котик изменен");
             }
             catch (Exception ex)
@@ -97,11 +98,11 @@ namespace Cat.API.Controllers
 
         // DELETE api/<CatController>
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] DeleteCatRequest cat)
+        public IActionResult Delete([FromBody] DeleteCatRequest cat)
         {
             try
             {
-                await _catService.Delete(_mapper.Map<BLL.Entities.Cat>(cat));
+                _catService.Delete(_mapper.Map<BLL.Entities.Cat>(cat));
                 return Ok("Котик удален :(");
             }
             catch (Exception ex)

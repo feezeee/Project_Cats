@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Cat.API.Request;
+using Cat.API.Response;
 
 namespace Cat.API.AutoMapper
 {
@@ -10,6 +11,7 @@ namespace Cat.API.AutoMapper
             CreateMap<PostCatRequest, BLL.Entities.Cat>();
             CreateMap<PutCatRequest, BLL.Entities.Cat>();
             CreateMap<DeleteCatRequest, BLL.Entities.Cat>();
+            CreateMap<BLL.Entities.Cat, GetCatResponse>();
         }
     }
 }

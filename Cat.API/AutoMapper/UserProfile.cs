@@ -8,10 +8,10 @@ namespace Cat.API.AutoMapper
     {
         public UserProfile()
         {
-            CreateMap<BLL.Entities.Account, UserIdentityResponse>();
             CreateMap<PostUserRequest, BLL.Entities.Account>();
             CreateMap<DeleteUserRequest, BLL.Entities.Account>();
             CreateMap<PutUserRequest, BLL.Entities.Account>();
+            CreateMap<BLL.Entities.Account, GetAccountResponse>();
         }
     }
 }

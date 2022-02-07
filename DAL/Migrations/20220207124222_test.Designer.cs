@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(CatContext))]
-    [Migration("20220204124628_test")]
+    [Migration("20220207124222_test")]
     partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("BLL.Entities.Account", b =>
                 {
-                    b.Property<string>("Name")
+                    b.Property<string>("Login")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Password")
@@ -37,7 +37,7 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Name");
+                    b.HasKey("Login");
 
                     b.ToTable("Accounts");
                 });

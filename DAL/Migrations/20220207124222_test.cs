@@ -13,13 +13,13 @@ namespace DAL.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Login = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Accounts", x => x.Name);
+                    table.PrimaryKey("PK_Accounts", x => x.Login);
                 });
 
             migrationBuilder.CreateTable(

@@ -17,14 +17,14 @@ namespace DAL.Finders
         }
 
 
-        public Task<Account> GetByName(string name)
+        public Task<Account> GetByLogin(string login)
         {
-            return Find().FirstOrDefaultAsync(t=>t.Name == name);
+            return Find().FirstOrDefaultAsync(t=>t.Login == login);
         }
 
-        public Task<Account> GetByNameAndPassword(string name, string password)
+        public Task<Account> GetByLoginAndPassword(string login, string password)
         {
-            return Find().FirstOrDefaultAsync(t => t.Name == name && t.Password == password);
+            return Find().FirstOrDefaultAsync(t => t.Login == login && t.Password == password);
         }
     }
 }

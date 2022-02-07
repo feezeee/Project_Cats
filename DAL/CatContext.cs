@@ -10,7 +10,7 @@ namespace DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Account>().HasKey(u => new { u.Name });
+            modelBuilder.Entity<Account>().HasKey(u => new { u.Login });
         }
 
         public CatContext(DbContextOptions<CatContext> options) : base(options)

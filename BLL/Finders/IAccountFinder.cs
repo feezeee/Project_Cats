@@ -9,8 +9,8 @@ namespace BLL.Finders
 {
     public interface IAccountFinder
     {
-        Task<Account> GetByName(string name);
-        Task<Account> GetByNameAndPassword(string name, string password);
+        Task<Account> GetByLogin(string login);
+        Task<Account> GetByLoginAndPassword(string login, string password);
 
     }
 }

@@ -12,26 +12,27 @@ namespace Cat.API.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
-        private readonly IAccountService _userService;
         private readonly IMapper _mapper;
-        public JWTMiddleware(RequestDelegate next, IConfiguration configuration, IAccountService userService, IMapper mapper)
+        private readonly IAccountService _accountService;
+        public JWTMiddleware(RequestDelegate next, IConfiguration configuration, IMapper mapper, IAccountService accountService)
         {
             _next = next;
             _configuration = configuration;
-            _userService = userService;
             _mapper = mapper;
+            _accountService = accountService;
         }
+
         public async Task Invoke(HttpContext context)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                attachAccountToContext(context, token);
+                AttachAccountToContext(context, token);
 
             await _next(context);
         }
 
-        private void attachAccountToContext(HttpContext context, string token)
+        private void AttachAccountToContext(HttpContext context, string token)
         {
             try
             {
@@ -51,11 +52,17 @@ namespace Cat.API.Middleware
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var accoutnname = jwtToken.Claims.First(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value;
+                var login = jwtToken.Claims.First(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value;
+                var user = _mapper.Map<GetAccountResponse>(_accountService.GetByLogin(login));
+                var role = user.Role;
+                   
 
-                
-                // attach account to context on successful jwt validation
-                context.Items["User"] = _mapper.Map<UserIdentityResponse>(_userService.GetByName(accoutnname).Result);
+                context.User.AddIdentity(new ClaimsIdentity(new List<Claim>
+                {
+                    new Claim(ClaimsIdentity.DefaultNameClaimType,login),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
+                }));
+
             }
             catch
             {

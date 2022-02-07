@@ -9,10 +9,10 @@ namespace BLL.Services
 {
     public interface ICatService 
     {       
-        Task Create (Cat cat);
+        void Create (Cat cat);
         IEnumerable<Cat> Get();
-        Task Update (Cat cat);
-        Task Delete (Cat cat);
+        void Update (Cat cat);
+        void Delete (Cat cat);
         Task<Cat> GetById(int id);
         Task<IEnumerable<Cat>> GetByName(string name);
     }

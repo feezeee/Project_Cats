@@ -19,10 +19,10 @@ namespace BLL.Services
             this.unitOfWork = unitOfWork;
         }       
 
-        public async Task Create(Cat cat)
+        public void Create(Cat cat)
         {            
             cats.Create(cat);
-            await unitOfWork.Save();            
+            unitOfWork.Save();            
         }
 
         public IEnumerable<Cat> Get()
@@ -30,19 +30,19 @@ namespace BLL.Services
             return cats.Get();
         }
 
-        public async Task Update(Cat cat)
+        public void Update(Cat cat)
         {
             
             cats.Update(cat);
-            await unitOfWork.Save();
+            unitOfWork.Save();
             
         }
 
-        public async Task Delete(Cat cat)
+        public void Delete(Cat cat)
         {     
            
             cats.Delete(cat);
-            await unitOfWork.Save();
+            unitOfWork.Save();
             
         }
 

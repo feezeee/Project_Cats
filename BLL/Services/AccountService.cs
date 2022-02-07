@@ -23,10 +23,10 @@ namespace BLL.Services
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task Create(Account entity)
+        public void Create(Account entity)
         {
             repository.Create(entity);
-            await unitOfWork.Save();
+            unitOfWork.Save();
         }
 
         public IEnumerable<Account> Get()
@@ -34,28 +34,26 @@ namespace BLL.Services
             return repository.Get();
         }
 
-        public async Task Update(Account entity)
+        public void Update(Account entity)
         {            
-                repository.Update(entity);
-                await unitOfWork.Save();
-            
+            repository.Update(entity);
+            unitOfWork.Save();            
         }
 
-        public async Task Delete(Account entity)
+        public void Delete(Account entity)
         {
-                repository.Delete(entity);
-                await unitOfWork.Save();
-            
+            repository.Delete(entity);
+            unitOfWork.Save();            
         }
 
-        public async Task<Account> GetByName(string name)
+        public async Task<Account> GetByLogin(string name)
         {
-            return await accountFinder.GetByName(name);
+            return await accountFinder.GetByLogin(name);
         }
 
-        public async Task<Account> GetByNameAndPassword(string name, string password)
+        public async Task<Account> GetByLoginAndPassword(string name, string password)
         {
-            return await accountFinder.GetByNameAndPassword(name, password);
+            return await accountFinder.GetByLoginAndPassword(name, password);
         }
     }
 }

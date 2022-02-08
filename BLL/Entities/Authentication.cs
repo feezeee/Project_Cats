@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace BLL.Entities
 {
-    public class Authorization
+    public class Authentication
     {
         public string Login { get; set; }
-        public string Role { get; set; }
-        public string JwtToken { get; set; }
-        public string RefreshToken { get; set; }
-
+        public string Password { get; set; }  
+        public string IpAddress { get; set; }
     }
 }

@@ -1,36 +1,47 @@
 ﻿using BLL.Entities;
 using BLL.Finders;
-using BLL.Repository;
+using BLL.UnitOfWork;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {
     public class AuthorizationService : IAuthorizationService
     {
-        IAccountFinder accountFinder { get; set; }
-        IConfiguration configuration { get; set; }
-        public AuthorizationService(IAccountFinder accountFinder, IConfiguration configuration)
+        private readonly IAccountFinder accountFinder;
+        private readonly IConfiguration configuration;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IAccountService accountService;
+        public AuthorizationService(IUnitOfWork unitOfWork, IAccountService accountService, IAccountFinder accountFinder, IConfiguration configuration)
         {
             this.accountFinder = accountFinder;
             this.configuration = configuration;
+            this.unitOfWork = unitOfWork;
+            this.accountService = accountService;
         }
-        public async Task<Authorization> Authenticate(string login, string password)
+        public async Task<Authorization> Authenticate(Authentication auntefication)
         {
-            var user = await accountFinder.GetByLoginAndPassword(login, password);
+            var user = await accountFinder.GetByLoginAndPassword(auntefication.Login, auntefication.Password);
             if (user == null)
             {
                 return null;
             }
-            var identity = GetIdentity(user);
+            var jwtToken = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken(auntefication.IpAddress);
 
+            user.RefreshTokens.Add(refreshToken);
+            accountService.Update(user);
+                        
+            return new Authorization { Login = user.Login, Role = user.Role, JwtToken = jwtToken, RefreshToken = refreshToken.Token};
+        }
+
+        private string GenerateJwtToken(Account account)
+        {
+            var identity = GetIdentity(account);
             var now = DateTime.UtcNow;
             double lifetime;
             double.TryParse(configuration["Jwt:LIFETIME"], out lifetime);
@@ -40,8 +51,26 @@ namespace BLL.Services
                     expires: now.Add(TimeSpan.FromMinutes(lifetime)),
                     claims: identity.Claims,
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])), SecurityAlgorithms.HmacSha256));
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            return new Authorization { Login = login, Role = user.Role, Token = encodedJwt };
+            return new JwtSecurityTokenHandler().WriteToken(jwt);
+        }
+        private RefreshToken GenerateRefreshToken(string ipAddress)
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                var refreshToken = Convert.ToBase64String(randomNumber);
+
+                int LifeTimeDays;
+                int.TryParse(configuration["Refreshtoken:LifeTimeDays"], out LifeTimeDays);
+                return new RefreshToken
+                {
+                    Token = refreshToken,
+                    Expires = DateTime.UtcNow.AddDays(LifeTimeDays),
+                    Created = DateTime.UtcNow,
+                    CreatedByIp = ipAddress
+                };
+            }            
         }
 
         private ClaimsIdentity GetIdentity(Account account)

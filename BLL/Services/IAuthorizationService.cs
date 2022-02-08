@@ -9,7 +9,7 @@ namespace BLL.Services
 {
     public interface IAuthorizationService
     {
-        Task<Authorization> Authenticate(string login, string password);
+        Task<Authorization> Authenticate(Authentication auntefication);
 
     }
 }

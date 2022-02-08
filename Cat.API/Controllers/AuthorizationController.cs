@@ -7,6 +7,8 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Cat.API.Request;
+using Microsoft.AspNetCore.Authorization;
+using BLL.Entities;
 
 namespace Cat.API.Controllers
 {
@@ -18,9 +20,9 @@ namespace Cat.API.Controllers
         private readonly IAccountService _userService;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly IAuthorizationService _authorizationService;
+        private readonly BLL.Services.IAuthorizationService _authorizationService;
 
-        public AuthorizationController(ILogger<AuthorizationController> logger, IAccountService userService, IMapper mapper, IConfiguration configuration, IAuthorizationService authorizationService)
+        public AuthorizationController(ILogger<AuthorizationController> logger, IAccountService userService, IMapper mapper, IConfiguration configuration, BLL.Services.IAuthorizationService authorizationService)
         {
             _logger = logger;
             _userService = userService;
@@ -29,18 +31,36 @@ namespace Cat.API.Controllers
             _authorizationService = authorizationService;
         }
 
-        [HttpPost("Login")]        
-        public async Task<IActionResult> Authorizate([FromBody] PostAccountRequest postAccountRequest)
+        [HttpPost("Login")]   
+        [AllowAnonymous]
+        public async Task<IActionResult> Authorizate([FromBody] PostAuthenticateRequest postAuthenticateRequest)
         {
-            string login = postAccountRequest.Login;
-            string password = postAccountRequest.Password;
-            var authorization = await _authorizationService.Authenticate(login, password);
-            if (authorization == null)
+            try
             {
-                return BadRequest("Неверный логин и(или) пароль!");
+                var requestAuthenticate = _mapper.Map<Authentication>(postAuthenticateRequest);
+
+                if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                {
+                    requestAuthenticate.IpAddress = Request.Headers["X-Forwarded-For"];
+                }
+                else
+                {
+                    requestAuthenticate.IpAddress = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+                }
+
+                var authorization = await _authorizationService.Authenticate(requestAuthenticate);
+                if (authorization == null)
+                {
+                    return BadRequest("Неверный логин и(или) пароль!");
+                }
+                var authorizateionResponse = _mapper.Map<AuthorizationResponse>(authorization);
+                return Ok(authorizateionResponse);
             }
-            var authorizateionResponse = _mapper.Map<AuthorizationResponse>(authorization);
-            return Ok(authorizateionResponse);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         

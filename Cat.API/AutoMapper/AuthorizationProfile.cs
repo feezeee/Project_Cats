@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BLL.Entities;
+using Cat.API.Request;
 using Cat.API.Response;
 
 namespace Cat.API.AutoMapper
@@ -9,6 +10,7 @@ namespace Cat.API.AutoMapper
         public AuthorizationProfile()
         {
             CreateMap<Authorization, AuthorizationResponse>();
+            CreateMap<PostAuthenticateRequest, Authentication>();
         }
     }
 }

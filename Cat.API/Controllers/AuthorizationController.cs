@@ -21,14 +21,16 @@ namespace Cat.API.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly BLL.Services.IAuthorizationService _authorizationService;
+        private readonly IEncryption _encryption;
 
-        public AuthorizationController(ILogger<AuthorizationController> logger, IAccountService userService, IMapper mapper, IConfiguration configuration, BLL.Services.IAuthorizationService authorizationService)
+        public AuthorizationController(ILogger<AuthorizationController> logger, IAccountService userService, IMapper mapper, IConfiguration configuration, BLL.Services.IAuthorizationService authorizationService, IEncryption encryption)
         {
             _logger = logger;
             _userService = userService;
             _mapper = mapper;
             _configuration = configuration;
             _authorizationService = authorizationService;
+            _encryption = encryption;
         }
 
         [HttpPost("Login")]   
@@ -37,24 +39,31 @@ namespace Cat.API.Controllers
         {
             try
             {
-                var requestAuthenticate = _mapper.Map<Authentication>(postAuthenticateRequest);
+                var login = postAuthenticateRequest.Login;
+                var password = postAuthenticateRequest.Password;
 
-                if (Request.Headers.ContainsKey("X-Forwarded-For"))
-                {
-                    requestAuthenticate.IpAddress = Request.Headers["X-Forwarded-For"];
-                }
-                else
-                {
-                    requestAuthenticate.IpAddress = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
-                }
-
-                var authorization = await _authorizationService.Authenticate(requestAuthenticate);
-                if (authorization == null)
+                var user = await _userService.GetByLoginAndPassword(login, password);
+                if (user == null)
                 {
                     return BadRequest("Неверный логин и(или) пароль!");
                 }
-                var authorizateionResponse = _mapper.Map<AuthorizationResponse>(authorization);
-                return Ok(authorizateionResponse);
+               
+                string ipAddress = GetIpAddress();               
+
+                var authorization = await _authorizationService.Authenticate(user, ipAddress);
+
+
+                if (authorization.jwtToken == null && authorization.refreshToken == null)
+                {
+                    return BadRequest("Неверный логин и(или) пароль!");
+                }
+                var response = new
+                {
+                    jwtToken = authorization.jwtToken,
+                    refreshToken = authorization.refreshToken
+                };
+
+                return Json(response);
             }
             catch (Exception ex)
             {
@@ -63,6 +72,59 @@ namespace Cat.API.Controllers
             
         }
 
-        
+
+        [AllowAnonymous]
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] PostRefreshTokenRequest postRefreshTokenRequest)
+        {
+            try
+            {                
+                var user = await _userService.GetByRefreshToken(postRefreshTokenRequest.RefreshToken);
+                if (user == null)
+                {
+                    return BadRequest("Токен не соответствует ни одному пользователю! ");
+                }
+                var oldRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.Token == _encryption.Encrypt(postRefreshTokenRequest.RefreshToken));
+
+                if (oldRefreshToken == null)
+                {
+                    return BadRequest("Нет токена!");
+                }
+
+                var refreshTokens = await _authorizationService.RefreshToken(user, oldRefreshToken, GetIpAddress());
+                if (refreshTokens.jwtToken == null && refreshTokens.refreshToken == null)
+                {
+                    return BadRequest("Произошла ошибка");
+                }
+                var response = new
+                {
+                    jwtToken = refreshTokens.jwtToken,
+                    refreshToken = refreshTokens.refreshToken
+                };
+
+                return Json(response);
+                //return Ok(user);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        private string GetIpAddress()
+        {
+            string ipAddress;
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+            {
+                ipAddress = Request.Headers["X-Forwarded-For"];
+            }
+            else
+            {
+                ipAddress = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            }
+            return ipAddress;
+        }
+
     }
 }

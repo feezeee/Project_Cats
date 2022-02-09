@@ -3,7 +3,6 @@ using BLL.Repository;
 using BLL.Services;
 using BLL.UnitOfWork;
 using Cat.API.AutoMapper;
-using Cat.API.Middleware;
 using DAL;
 using DAL.Finders;
 using DAL.Repositories;
@@ -38,6 +37,7 @@ builder.Services.AddTransient<Finder<BLL.Entities.Account>>();
 builder.Services.AddTransient<IAccountFinder, AccountFinder>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
+builder.Services.AddTransient<IEncryption, Encrypt>();
 
 
 
@@ -69,8 +69,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 var app = builder.Build();
 
 
-var us = app.Services.CreateScope().ServiceProvider.GetService<IAccountService>();
-app.UseMiddleware<JWTMiddleware>(us);
+//var us = app.Services.CreateScope().ServiceProvider.GetService<IAccountService>();
+//app.UseMiddleware<JWTMiddleware>(us);
 
 
 

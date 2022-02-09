@@ -30,11 +30,11 @@ namespace Cat.API.Controllers
 
         // GET: api/<CatController>
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var cats = _mapper.Map<IEnumerable<GetCatResponse>>(_catService.Get());
+                var cats = _mapper.Map<IEnumerable<GetCatResponse>>(await _catService.Get());
                 if (cats.Count() == 0)
                 {
                     return NoContent();
@@ -68,11 +68,11 @@ namespace Cat.API.Controllers
 
         // POST api/<CatController>
         [HttpPost]
-        public IActionResult Post([FromBody] PostCatRequest cat)
+        public async Task<IActionResult> Post([FromBody] PostCatRequest cat)
         {
             try
             {
-                _catService.Create(_mapper.Map<BLL.Entities.Cat>(cat));
+                await _catService.Create(_mapper.Map<BLL.Entities.Cat>(cat));
                 return Ok("Котик добавлен )");
             }
             catch (Exception ex)
@@ -83,11 +83,11 @@ namespace Cat.API.Controllers
 
         // PUT api/<CatController>
         [HttpPut]
-        public IActionResult Put([FromBody] PutCatRequest cat)
+        public async Task<IActionResult> Put([FromBody] PutCatRequest cat)
         {
             try
             {
-                _catService.Update(_mapper.Map<BLL.Entities.Cat>(cat));
+                await _catService.Update(_mapper.Map<BLL.Entities.Cat>(cat));
                 return Ok("Котик изменен");
             }
             catch (Exception ex)
@@ -98,11 +98,11 @@ namespace Cat.API.Controllers
 
         // DELETE api/<CatController>
         [HttpDelete]
-        public IActionResult Delete([FromBody] DeleteCatRequest cat)
+        public async Task<IActionResult> Delete([FromBody] DeleteCatRequest cat)
         {
             try
             {
-                _catService.Delete(_mapper.Map<BLL.Entities.Cat>(cat));
+                await _catService.Delete(_mapper.Map<BLL.Entities.Cat>(cat));
                 return Ok("Котик удален :(");
             }
             catch (Exception ex)

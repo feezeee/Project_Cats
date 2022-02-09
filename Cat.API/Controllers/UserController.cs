@@ -14,22 +14,23 @@ namespace Cat.API.Controllers
         private readonly ILogger<UserController> _logger;
         private readonly IAccountService _userService;
         private readonly IMapper _mapper;
+        private readonly IEncryption _encryption;
 
-        public UserController(ILogger<UserController> logger, IAccountService userService, IMapper mapper)
+        public UserController(ILogger<UserController> logger, IAccountService userService, IMapper mapper, IEncryption encryption)
         {
             _logger = logger;
             _userService = userService;
             _mapper = mapper;
-
+            _encryption = encryption;
         }
         
         [Route("new")]
         [HttpPost]
-        public IActionResult Post([FromBody] PostUserRequest user)
+        public async Task<IActionResult> Post([FromBody] PostUserRequest user)
         {
             try
             {
-                _userService.Create(_mapper.Map<BLL.Entities.Account>(user));
+                await _userService.Create(_mapper.Map<BLL.Entities.Account>(user));
                 return Ok("Пользователь добавлен! добавлен )");
             }
             catch (Exception ex)
@@ -41,11 +42,11 @@ namespace Cat.API.Controllers
         [Route("get")]
         [HttpGet]
         [Authorize]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var users = _mapper.Map<IEnumerable<GetAccountResponse>>(_userService.Get());
+                var users = _mapper.Map<IEnumerable<GetAccountResponse>>(await _userService.Get());
                 if (users == null)
                 {
                     return NoContent();
@@ -63,11 +64,11 @@ namespace Cat.API.Controllers
         [HttpPut]        
         [Route("edit")]
         [Authorize]
-        public IActionResult Put([FromBody] PutUserRequest user)
+        public async Task<IActionResult> Put([FromBody] PutUserRequest user)
         {
             try
             {
-                _userService.Update(_mapper.Map<BLL.Entities.Account>(user));
+                await _userService.Update(_mapper.Map<BLL.Entities.Account>(user));
                 return Ok("Пользователь изменен изменен");
             }
             catch (Exception ex)
@@ -80,11 +81,11 @@ namespace Cat.API.Controllers
         [HttpDelete]
         [Authorize(Roles = "admin")]
         [Route("delete")]
-        public IActionResult Delete([FromBody] DeleteUserRequest user)
+        public async Task<IActionResult> Delete([FromBody] DeleteUserRequest user)
         {
             try
             {
-                _userService.Delete(_mapper.Map<BLL.Entities.Account>(user));
+                await _userService.Delete(_mapper.Map<BLL.Entities.Account>(user));
                 return Ok("Пользователь удален :(");
             }
             catch (Exception ex)

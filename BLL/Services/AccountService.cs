@@ -12,39 +12,44 @@ namespace BLL.Services
 {
     public class AccountService : IAccountService
     {
-        IRepository<Account> repository { get; set; }
-        IAccountFinder accountFinder { get; set; }
-        IUnitOfWork unitOfWork { get; set; }
+        private readonly IRepository<Account> repository;
+        private readonly IAccountFinder accountFinder;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IEncryption encryption;
 
-        public AccountService(IRepository<Account> repository, IAccountFinder accountFinder, IUnitOfWork unitOfWork)
+        public AccountService(IRepository<Account> repository, IAccountFinder accountFinder, IUnitOfWork unitOfWork, IEncryption encryption)
         {
             this.repository = repository;
             this.accountFinder = accountFinder;
             this.unitOfWork = unitOfWork;
+            this.encryption = encryption;
         }
 
-        public void Create(Account entity)
+        public Task Create(Account entity)
         {
+            entity.Password = encryption.Encrypt(entity.Password);
             repository.Create(entity);
-            unitOfWork.Save();
+            return unitOfWork.Save();
         }
 
-        public IEnumerable<Account> Get()
+       
+        public Task Update(Account entity)
         {
-            return repository.Get();
-        }
-
-        public void Update(Account entity)
-        {            
+            entity.Password = encryption.Encrypt(entity.Password);
             repository.Update(entity);
-            unitOfWork.Save();            
+            return unitOfWork.Save();            
         }
 
-        public void Delete(Account entity)
+        public Task Delete(Account entity)
         {
             repository.Delete(entity);
-            unitOfWork.Save();            
+            return unitOfWork.Save();            
         }
+        public async Task<IEnumerable<Account>> Get()
+        {
+            return await accountFinder.Get();
+        }
+
 
         public async Task<Account> GetByLogin(string name)
         {
@@ -53,7 +58,20 @@ namespace BLL.Services
 
         public async Task<Account> GetByLoginAndPassword(string name, string password)
         {
+            password = encryption.Encrypt(password);
             return await accountFinder.GetByLoginAndPassword(name, password);
         }
+
+        public async Task<Account> GetByRefreshToken(string refreshToken)
+        {
+            refreshToken = encryption.Encrypt(refreshToken);
+            return await accountFinder.GetByRefreshToken(refreshToken);
+        }
+
+        //public async Task<Account> GetByIsActiveRefreshToken(string refreshToken)
+        //{
+            
+        //    return await accountFinder.GetByRefreshToken(refreshToken);
+        //}
     }
 }

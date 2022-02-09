@@ -16,27 +16,41 @@ namespace BLL.Services
         private readonly IConfiguration configuration;
         private readonly IUnitOfWork unitOfWork;
         private readonly IAccountService accountService;
-        public AuthorizationService(IUnitOfWork unitOfWork, IAccountService accountService, IAccountFinder accountFinder, IConfiguration configuration)
+        private readonly IEncryption encryption;
+        public AuthorizationService(IUnitOfWork unitOfWork, IAccountService accountService, IAccountFinder accountFinder, IConfiguration configuration, IEncryption encryption)
         {
             this.accountFinder = accountFinder;
             this.configuration = configuration;
             this.unitOfWork = unitOfWork;
             this.accountService = accountService;
+            this.encryption = encryption;
         }
-        public async Task<Authorization> Authenticate(Authentication auntefication)
-        {
-            var user = await accountFinder.GetByLoginAndPassword(auntefication.Login, auntefication.Password);
-            if (user == null)
-            {
-                return null;
-            }
-            var jwtToken = GenerateJwtToken(user);
-            var refreshToken = GenerateRefreshToken(auntefication.IpAddress);
 
-            user.RefreshTokens.Add(refreshToken);
-            accountService.Update(user);
-                        
-            return new Authorization { Login = user.Login, Role = user.Role, JwtToken = jwtToken, RefreshToken = refreshToken.Token};
+        public async Task<(string jwtToken, string refreshToken)> Authenticate(Account account, string ipAddress)
+        {        
+            var jwtToken = GenerateJwtToken(account);
+            var refreshToken = GenerateRefreshToken(ipAddress);   
+            var result = (jwtToken: jwtToken, refreshToken: refreshToken.Token);
+            refreshToken.Token = encryption.Encrypt(refreshToken.Token);
+            account.RefreshTokens.Add(refreshToken);
+            await unitOfWork.Save();
+            return result;
+        }
+        public async Task<(string jwtToken, string refreshToken)> RefreshToken(Account account, RefreshToken oldRefreshToken , string ipAddress)
+        {
+            
+            var jwtToken = GenerateJwtToken(account);
+            var newRefreshToken = GenerateRefreshToken(ipAddress);
+            var result = (jwtToken: jwtToken, refreshToken: newRefreshToken.Token);
+            newRefreshToken.Token = encryption.Encrypt(newRefreshToken.Token);
+
+            oldRefreshToken.Revoked = newRefreshToken.Created;
+            oldRefreshToken.RevokedByIp = newRefreshToken.CreatedByIp;
+            oldRefreshToken.ReplacedByToken = newRefreshToken.Token;
+
+            account.RefreshTokens.Add(newRefreshToken);
+            await unitOfWork.Save();
+            return result;
         }
 
         private string GenerateJwtToken(Account account)

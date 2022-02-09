@@ -19,32 +19,33 @@ namespace BLL.Services
             this.unitOfWork = unitOfWork;
         }       
 
-        public void Create(Cat cat)
+        public Task Create(Cat cat)
         {            
             cats.Create(cat);
-            unitOfWork.Save();            
+            return unitOfWork.Save();            
         }
-
-        public IEnumerable<Cat> Get()
-        {
-            return cats.Get();
-        }
-
-        public void Update(Cat cat)
+                
+        public Task Update(Cat cat)
         {
             
             cats.Update(cat);
-            unitOfWork.Save();
+            return unitOfWork.Save();
             
         }
 
-        public void Delete(Cat cat)
+        public Task Delete(Cat cat)
         {     
            
             cats.Delete(cat);
-            unitOfWork.Save();
+            return unitOfWork.Save();
             
         }
+
+        public async Task<IEnumerable<Cat>> Get()
+        {
+            return await catFinder.Get();
+        }
+
 
         public async Task<Cat> GetById(int id)
         {

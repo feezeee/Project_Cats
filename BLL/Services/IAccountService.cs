@@ -9,11 +9,14 @@ namespace BLL.Services
 {
     public interface IAccountService
     {
-        void Create(Account entity);
-        IEnumerable<Account> Get();
-        void Update(Account entity);
-        void Delete(Account entity);
+        Task Create(Account entity);
+        Task<IEnumerable<Account>> Get();
+        Task Update(Account entity);
+        Task Delete(Account entity);
+
         Task<Account> GetByLogin(string login);
         Task<Account> GetByLoginAndPassword(string login, string password);
+        Task<Account> GetByRefreshToken(string refreshToken);
+        //Task<Account> GetByIsActiveRefreshToken(string refreshToken);
     }
 }

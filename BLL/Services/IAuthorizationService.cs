@@ -9,7 +9,7 @@ namespace BLL.Services
 {
     public interface IAuthorizationService
     {
-        Task<Authorization> Authenticate(Authentication auntefication);
-
+        Task<(string jwtToken, string refreshToken)> Authenticate(Account account, string ipAddress);
+        Task<(string jwtToken, string refreshToken)> RefreshToken(Account account, RefreshToken oldRefreshToken, string ipAddress);
     }
 }

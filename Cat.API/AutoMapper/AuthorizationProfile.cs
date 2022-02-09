@@ -9,8 +9,8 @@ namespace Cat.API.AutoMapper
     {
         public AuthorizationProfile()
         {
-            CreateMap<Authorization, AuthorizationResponse>();
-            CreateMap<PostAuthenticateRequest, Authentication>();
+            //CreateMap<Authorization, AuthorizationResponse>();
+            //CreateMap<PostAuthenticateRequest, Authentication>();
         }
     }
 }

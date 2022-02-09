@@ -10,7 +10,6 @@ namespace BLL.Repository
     {
         // CRUD операции
         void Create(T entity);
-        IQueryable<T> Get();
         void Update(T entity);
         void Delete(T entity);
 

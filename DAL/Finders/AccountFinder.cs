@@ -16,6 +16,16 @@ namespace DAL.Finders
 
         }
 
+        public Task<List<Account>> Get()
+        {
+            return Find().ToListAsync();
+        }
+
+        //public Task<Account> GetByIsActiveRefreshToken(string refreshToken)
+        //{
+        //    var account = Find().SingleOrDefault(t => t.RefreshTokens.Any(t => t.Token == refreshToken))
+        //    return account.RefreshTokens.;
+        //}
 
         public Task<Account> GetByLogin(string login)
         {
@@ -25,6 +35,11 @@ namespace DAL.Finders
         public Task<Account> GetByLoginAndPassword(string login, string password)
         {
             return Find().FirstOrDefaultAsync(t => t.Login == login && t.Password == password);
+        }
+
+        public Task<Account> GetByRefreshToken(string refreshToken)
+        {            
+            return Find().SingleOrDefaultAsync(t => t.RefreshTokens.Any(t => t.Token == refreshToken && t.Revoked == null && DateTime.UtcNow < t.Expires));
         }
     }
 }

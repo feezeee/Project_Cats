@@ -21,7 +21,7 @@ namespace DAL.Finders
             return Find().ToListAsync();
         }
 
-        public Task<Cat> GetById(int id)
+        public Task<Cat?> GetById(int id)
         {
             return Find().FirstOrDefaultAsync(t => t.Id == id);
         }

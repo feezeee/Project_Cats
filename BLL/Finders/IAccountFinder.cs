@@ -11,9 +11,9 @@ namespace BLL.Finders
     {
         Task<List<Account>> Get();
 
-        Task<Account> GetByLogin(string login);
-        Task<Account> GetByLoginAndPassword(string login, string password);
-        Task<Account> GetByRefreshToken(string refreshToken);
+        Task<Account?> GetByLogin(string login);
+        Task<Account?> GetByLoginAndPassword(string login, string password);
+        Task<Account?> GetByRefreshToken(string refreshToken);
         //Task<Account> GetByIsActiveRefreshToken(string refreshToken);
     }
 }

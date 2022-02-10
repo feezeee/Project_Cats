@@ -11,7 +11,7 @@ namespace BLL.Finders
     {
         Task<List<Cat>> Get();
 
-        Task<Cat> GetById(int id);
+        Task<Cat?> GetById(int id);
 
         Task<List<Cat>> GetByName(string name);
     }

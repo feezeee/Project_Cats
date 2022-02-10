@@ -37,7 +37,7 @@ builder.Services.AddTransient<Finder<BLL.Entities.Account>>();
 builder.Services.AddTransient<IAccountFinder, AccountFinder>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddTransient<IAuthorizationService, AuthorizationService>();
-builder.Services.AddTransient<IEncryption, Encrypt>();
+builder.Services.AddTransient<IEncryption, EncryptSHA256>();
 
 
 
@@ -58,23 +58,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-//builder.Services.AddAuthorization(builder =>
-//{
-//    builder.AddPolicy("default scheme", policy =>
-//    {
-//        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-//        policy.RequireAuthenticatedUser();
-//    });
-//});
 var app = builder.Build();
-
-
-//var us = app.Services.CreateScope().ServiceProvider.GetService<IAccountService>();
-//app.UseMiddleware<JWTMiddleware>(us);
-
-
-
-// Configure the HTTP request pipeline.
 
 if (builder.Environment.IsDevelopment())
 {

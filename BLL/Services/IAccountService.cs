@@ -14,9 +14,9 @@ namespace BLL.Services
         Task Update(Account entity);
         Task Delete(Account entity);
 
-        Task<Account> GetByLogin(string login);
-        Task<Account> GetByLoginAndPassword(string login, string password);
-        Task<Account> GetByRefreshToken(string refreshToken);
+        Task<Account?> GetByLogin(string login);
+        Task<Account?> GetByLoginAndPassword(string login, string password);
+        Task<Account?> GetByRefreshToken(string refreshToken);
         //Task<Account> GetByIsActiveRefreshToken(string refreshToken);
     }
 }

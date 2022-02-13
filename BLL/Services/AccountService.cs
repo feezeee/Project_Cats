@@ -51,27 +51,21 @@ namespace BLL.Services
         }
 
 
-        public async Task<Account> GetByLogin(string name)
+        public async Task<Account?> GetByLogin(string name)
         {
             return await accountFinder.GetByLogin(name);
         }
 
-        public async Task<Account> GetByLoginAndPassword(string name, string password)
+        public async Task<Account?> GetByLoginAndPassword(string name, string password)
         {
             password = encryption.Encrypt(password);
             return await accountFinder.GetByLoginAndPassword(name, password);
         }
 
-        public async Task<Account> GetByRefreshToken(string refreshToken)
+        public async Task<Account?> GetByRefreshToken(string refreshToken)
         {
             refreshToken = encryption.Encrypt(refreshToken);
             return await accountFinder.GetByRefreshToken(refreshToken);
         }
-
-        //public async Task<Account> GetByIsActiveRefreshToken(string refreshToken)
-        //{
-            
-        //    return await accountFinder.GetByRefreshToken(refreshToken);
-        //}
     }
 }

@@ -47,7 +47,7 @@ namespace BLL.Services
         }
 
 
-        public async Task<Cat> GetById(int id)
+        public async Task<Cat?> GetById(int id)
         {
             return await catFinder.GetById(id);
         }
